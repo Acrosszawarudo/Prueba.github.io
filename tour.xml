@@ -5,14 +5,17 @@
 
 	<style name="roomspot" alpha="0.0" capture="false" />
 
-        <style name="linkhotspot">
-            <properties>
-                <property name="url" value="path/to/your/image.png" />
-                <property name="onclick" value="window.open('https://www.youtube.com/watch?v=NucG0kD3pkg', '_blank');" />
-            </properties>
-        </style>
-
-
+<!-- use a <style> to share the same attriubtes for all hotspots -->
+	<style name="flyoutimage"
+	       renderer="webgl"
+	       distorted="true"
+	       flying="0.0"
+	       backup_state=""
+	       backup_zorder=""
+	       flying_state="in"
+	       capture="true"
+	       onclick="flyout_hotspot()"
+	       />
 
 
 	<plugin name="soundinterface"
@@ -21,6 +24,44 @@
 	        preload="true"
 	        keep="true"
 	        />
+
+	<!-- flyout hotspot actions -->
+	<action name="flyout_hotspot">
+		for(set(i,0), i LT hotspot.count, inc(i),
+			copy(hs, hotspot[get(i)]);
+			if(hs.name != name AND hs.style == 'flyoutimage' AND (hs.flying_state == 'out' OR hs.flying_state == 'flyingout'),
+				callwith(hs, flyout_hotspot() );
+			  );
+		  );
+
+		if(flying_state == 'flyingout',
+			set(flying_state, 'flyingin');
+		  ,
+			if(flying_state == 'flyingin',
+				set(flying_state, 'flyingout');
+		  	  );
+		  );
+
+		if(flying_state == 'in',
+			calc(backup_state, '0.0|' + rx + '|' + ry + '|' + rz + '|' + scale);
+			copy(backup_zorder, zorder);
+			set(flying_state, 'flyingout');
+		  );
+
+		if(flying_state == 'out',
+			set(flying_state, 'flyingin');
+		  );
+
+		if(flying_state == 'flyingout',
+			set(zorder, 99);
+			tween(flying|rx|ry|rz|scale, ('1.0|0.0|0.0|0.0|'+0.9*min(stagewidth/sourcewidth,stageheight/sourceheight)), 0.5, default, set(flying_state,'out'); );
+		  );
+
+		if(flying_state == 'flyingin',
+			sub(zorder,1);
+			tween(flying|rx|ry|rz|scale, get(backup_state), 0.5, default, set(flying_state,'in'); copy(zorder,backup_zorder); );
+		  );
+	</action>
 
 
 	<action name="scene3dtransition" scope="local" args="scenename, hlookatoffset">
@@ -157,7 +198,7 @@
 			<point ath="19.1419485" atv="-10.0380080" />
 		</hotspot>
 
-		<hotspot name="spot3" url="rozemynemicrofono.png"   onloaded="do_crop_animation(100,100, 60)"  ath="calc:random*90- 45" atv="calc:random*60 - 30" zoom="true" enabled="false" onlastframe="calc(ath, random*90-45); calc(atv, random*60-30);" />
+		<hotspot name="spot3" url="explosion.png"   onloaded="do_crop_animation(100,100, 60)"  ath="calc:random*90- 45" atv="calc:random*60 - 30" zoom="true" enabled="false" onlastframe="calc(ath, random*90-45); calc(atv, random*60-30);" />
 
 		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
 
@@ -176,17 +217,72 @@
 
 		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
 
-        <hotspot name="youtube-video"
-                 style="linkhotspot"
-                 ath="-10.7191230"
-                 atv="-0.9789658" />
+<hotspot name="spot10" url="arrow.png"                 onloaded="do_crop_animation(64,64, 60);"  ath="-28.0841105" atv="4.0529822" onclick="scene3dtransition(scene_SC);" />
 
+<hotspot name="spot7" url="arrow.png"                 onloaded="do_crop_animation(64,64, 60);"   ath="164.2078433" atv="2.9072768" onclick="scene3dtransition(scene_AF);" />
+
+<!-- start playing the sound -->
+<events name="currentpano"
+        onnewpano="playsound(bgsnd, '2-PM-Animal-Crossing-New-Horizons-Soundtrack.ogg', 0);"
+        onremovepano="stopsound(bgsnd);"
+        />
+
+
+	<!-- a button to pause/play the sound -->
+	<layer name="snd" url="soundonoff.png" align="leftbottom" x="10" y="10" alpha="0.25" scale="0.5" onover="tween(alpha,1);" onout="tween(alpha,0.25);"
+	       crop="0|0|50|50"
+	       onclick="pausesoundtoggle(bgsnd); switch(crop, 0|0|50|50, 0|50|50|50);"
+	       />
+
+<hotspot name="spot1" style="flyoutimage"
+	         url="gatogojo.png"
+	         zorder="1"
+	         ath="108.4276006"
+	         atv="-5.0500233"
+	         scale="0.4"
+	         />
+
+	<hotspot name="spot2" style="flyoutimage"
+	         url="gatonaranja.png"
+	         zorder="2"
+	         ath="-55.5162434"
+	         atv="4.7672310"
+	         scale="0.4"
+	         />
+
+	<hotspot name="spot3" style="flyoutimage"
+	         url="Razas-de-gatos.png"
+	         zorder="3"
+	         ath="35.0783184"
+	         atv="-1.8493121"
+	         scale="0.4"
+	         />
 
 		<preview url="panos/LR.tiles/preview.jpg" />
 
 		<image prealign="0|0.0|0">
 			<cube url="panos/LR.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,768,1664" />
 		</image>
+
+
+		<!-- use only a grid preview pano (to save download space) -->
+	<preview type="grid(cube,2,1,256,0x000000,0x000000,0x222222);" />
+	<view limitview="lookat" vlookatmin="0" vlookatmax="0" />
+	
+	
+	<!-- include image thumbbar xml script code -->
+	<include url="thumbbar.xml" />
+
+
+	<action name="start" autorun="onstart">
+
+		create_thumbbar(6, bottom, h, 0,10, calc(device.mobile ? 45 : 90), calc(device.mobile ? 30 : 60), calc(device.mobile ? 3 : 6));
+
+		thumbbar_addimage('explosion.png');
+		thumbbar_addimage('arrow.png');
+		thumbbar_addimage('gatogojo.png');
+		thumbbar_addimage('gatonaranja.png');
+	</action>
 
 	</scene>
 
@@ -202,7 +298,20 @@
 			<cube url="panos/SC.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,768,1664" />
 		</image>
 
+	<include url="youtube-player.xml" />
+
+	<preview type="grid(cube,64,64,512,0xCCCCCC,0xFFFFFF,0x999999);" />
+	
+	<hotspot name="youtubespot"
+	         url="krpano-roundlogo.png"
+	         scale="0.5"
+	         zoom="true"
+	         ath="+26.5" atv="0"
+	         onclick="looktohotspot(get(name),90); youtubeplayer_open('QfCKecmPzKU');"
+	         />
+
+	<hotspot name="spot6" url="waves.png"   onloaded="do_crop_animation(128,128, 15);" ath="-169.2708189" atv="4.1756912" onclick="scene3dtransition(scene_LR);" scale="0.25" zoom="true" />
+
+
 	</scene>
-
-
 </krpano>
