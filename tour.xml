@@ -300,6 +300,7 @@
 	</model3d>
 
 
+
 	<hotspot name="spot6" url="waves.png"   onloaded="do_crop_animation(128,128, 15);" ath="-169.2708189" atv="4.1756912" onclick="scene3dtransition(model);" scale="0.25" zoom="true" />
 
 	</scene>
@@ -307,7 +308,7 @@
 	<scene name="model"  autoload="true"  thumburl="panos/AF.tiles/thumb.jpg" title="Model">		
 		<view oz="200" vlookat="10" hlookat="-45" tx="0" ty="0" tz="0" fov="120" fovmin="70" fovmax="70"/>
 		<image>
-			<depthmap url="ram.obj" hittest="true" rendermode="3dmodel" scale="100" textured="true" waitforload="true" center="0,0,0" axis="+x+y+z"/> 
+			<depthmap url="Christopher.obj" hittest="true" rendermode="3dmodel" scale="100" textured="true" waitforload="true" center="0,0,0" axis="+x+y+z"/> 
 		</image>		
 	</scene>
 
