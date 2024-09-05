@@ -2,7 +2,6 @@
 
 	<include url="skin/vtourskin.xml" />
 	<plugin nam="toolbox" url="plugins/toolbox/toolboxV2.js" keep="true" preload="true"/>
-
 	<style name="roomspot" alpha="0.0" capture="false" />
 
 <!-- use a <style> to share the same attriubtes for all hotspots -->
@@ -16,7 +15,6 @@
 	       capture="true"
 	       onclick="flyout_hotspot()"
 	       />
-
 
 	<plugin name="soundinterface"
 	        url="%VIEWER%/plugins/soundinterface.js"
@@ -62,7 +60,6 @@
 			tween(flying|rx|ry|rz|scale, get(backup_state), 0.5, default, set(flying_state,'in'); copy(zorder,backup_zorder); );
 		  );
 	</action>
-
 
 	<action name="scene3dtransition" scope="local" args="scenename, hlookatoffset">
 		motionblur = 0.5;
@@ -174,19 +171,6 @@
 	               design_text_shadow="1"
 	               />
 
-	<!--
-	    For an alternative skin design either change the <skin_settings> values 
-	    from above or optionally include one of the predefined designs from below.
-	-->
-	<!-- <include url="skin/vtourskin_design_flat_light.xml"  /> -->
-	<!-- <include url="skin/vtourskin_design_glass.xml"       /> -->
-	<!-- <include url="skin/vtourskin_design_ultra_light.xml" /> -->
-	<!-- <include url="skin/vtourskin_design_117.xml"         /> -->
-	<!-- <include url="skin/vtourskin_design_117round.xml"    /> -->
-	<!-- <include url="skin/vtourskin_design_black.xml"       /> -->
-	
-
-	
 	<scene name="scene_AF" title="AF" onstart="" thumburl="panos/AF.tiles/thumb.jpg" lat="18.48763889" lng="-69.96187778" alt="20.50" heading="0.0">
 		
 		<control bouncinglimits="calc:image.cube ? true : false" />
@@ -208,7 +192,6 @@
 			<cube url="panos/AF.tiles/%s/l%l/%v/l%l_%s_%v_%h.jpg" multires="512,768,1664" />
 		</image>
 
-		
 	</scene>
 
 	<scene name="scene_LR" title="LR" onstart="" thumburl="panos/LR.tiles/thumb.jpg" lat="18.48783611" lng="-69.96192778" alt="20.00" heading="0.0">
@@ -217,12 +200,12 @@
 
 		<view hlookat="0.0" vlookat="0.0" fovtype="MFOV" fov="120" maxpixelzoom="2.0" fovmin="70" fovmax="140" limitview="auto" />
 
-<hotspot name="spot10" url="arrow.png"                 onloaded="do_crop_animation(64,64, 60);"  ath="-28.0841105" atv="4.0529822" onclick="scene3dtransition(scene_SC);" />
+	<hotspot name="spot10" url="arrow.png"                 onloaded="do_crop_animation(64,64, 60);"  ath="-28.0841105" atv="4.0529822" onclick="scene3dtransition(scene_SC);" />
 
-<hotspot name="spot7" url="arrow.png"                 onloaded="do_crop_animation(64,64, 60);"   ath="164.2078433" atv="2.9072768" onclick="scene3dtransition(scene_AF);" />
+	<hotspot name="spot7" url="arrow.png"                 onloaded="do_crop_animation(64,64, 60);"   ath="164.2078433" atv="2.9072768" onclick="scene3dtransition(scene_AF);" />
 
 <!-- start playing the sound -->
-<events name="currentpano"
+	<events name="currentpano"
         onnewpano="playsound(bgsnd, '2-PM-Animal-Crossing-New-Horizons-Soundtrack.ogg', 0);"
         onremovepano="stopsound(bgsnd);"
         />
@@ -234,7 +217,7 @@
 	       onclick="pausesoundtoggle(bgsnd); switch(crop, 0|0|50|50, 0|50|50|50);"
 	       />
 
-<hotspot name="spot1" style="flyoutimage"
+	<hotspot name="spot1" style="flyoutimage"
 	         url="gatogojo.png"
 	         zorder="1"
 	         ath="108.4276006"
@@ -308,10 +291,24 @@
 	         zoom="true"
 	         ath="+26.5" atv="0"
 	         onclick="looktohotspot(get(name),90); youtubeplayer_open('QfCKecmPzKU');"
-	         />
+	/>
 
-	<hotspot name="spot6" url="waves.png"   onloaded="do_crop_animation(128,128, 15);" ath="-169.2708189" atv="4.1756912" onclick="scene3dtransition(scene_LR);" scale="0.25" zoom="true" />
 
+	<model3d name="mimodelo3d" url="Bomb.glb" scale="1">
+		<position x="700" y="350" z="150" />
+		<rotation x="0" y="0" z="0" />
+	</model3d>
+
+
+	<hotspot name="spot6" url="waves.png"   onloaded="do_crop_animation(128,128, 15);" ath="-169.2708189" atv="4.1756912" onclick="scene3dtransition(model);" scale="0.25" zoom="true" />
 
 	</scene>
+
+	<scene name="model"  autoload="true"  thumburl="panos/AF.tiles/thumb.jpg" title="Model">		
+		<view oz="200" vlookat="10" hlookat="-45" tx="0" ty="0" tz="0" fov="120" fovmin="70" fovmax="70"/>
+		<image>
+			<depthmap url="ram.obj" hittest="true" rendermode="3dmodel" scale="100" textured="true" waitforload="true" center="0,0,0" axis="+x+y+z"/> 
+		</image>		
+	</scene>
+
 </krpano>
