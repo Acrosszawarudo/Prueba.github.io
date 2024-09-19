@@ -4,6 +4,13 @@
 	<plugin nam="toolbox" url="plugins/toolbox/toolboxV2.js" keep="true" preload="true"/>
 	<style name="roomspot" alpha="0.0" capture="false" />
 
+	<plugin name="soundinterface"
+	        url="%VIEWER%/plugins/soundinterface.js"
+	        rootpath=""
+	        preload="true"
+	        keep="true"
+	        />
+
 <!-- use a <style> to share the same attriubtes for all hotspots -->
 	<style name="flyoutimage"
 	       renderer="webgl"
@@ -16,12 +23,6 @@
 	       onclick="flyout_hotspot()"
 	       />
 
-	<plugin name="soundinterface"
-	        url="%VIEWER%/plugins/soundinterface.js"
-	        rootpath=""
-	        preload="true"
-	        keep="true"
-	        />
 
 	<!-- flyout hotspot actions -->
 	<action name="flyout_hotspot">
