@@ -2,21 +2,21 @@
 	<!--
 		showtext() xml plugin
 		- showtext() and <textstyle> support for HTML5
-		- docu: https://krpano.com/plugins/showtext/
-		- krpano 1.21
+		- extended <textstyle> functionality compared to the build-in showtext() action
+		- just include this xml file via: <include url="showtext.xml" />
+		- docu: http://krpano.com/plugins/showtext/
+		- krpano 1.19
 	-->
 
 
 	<!-- predefine a DEFAULT textstyle element -->
 	<textstyle name="DEFAULT" />
-	
-	
 
 
 	<!-- the automatic running (autorun=preinit) install action -->
-	<action name="showtext_install" autorun="preinit" scope="private:showtext">
-		<!-- remove the built-in 'showtext' function to use the 'showtext' <action> instead: -->
-		delete(global.showtext);
+	<action name="showtext_install" autorun="preinit">
+		<!-- redirect the build-in 'showtext' action to the 'showtext_xml' action: -->
+		set(showtext, action(showtext_xml,'%%1','%%2') );
 
 		<!-- initialize internal variables -->
 		set(showtext_style, DEFAULT);
@@ -29,18 +29,11 @@
 	</action>
 	
 
-	<action name="showtext" scope="private:showtext" args="text, style">
-		if(!style, set(style, DEFAULT));
-		
-		if(global.textstyle[get(style)], 
-			copy(showtext_style, style);
-		  ,
-			warning("showtext() - there is no textstyle '", style, "' defined!");
-			global.textstyle.createarrayitem(get(style));
-		);
+	<action name="showtext_xml">
+		set(showtext_style, DEFAULT);
+		if('%2' != 'null', ifnot(textstyle['%2'], trace('textstyle "%2" not found'); , set(showtext_style,'%2')); );
 
-		copy(showtext_text, text);
-		
+		set(showtext_text, '%1');
 		if(showtext_text != showtext_prevtext,
 			copy(showtext_prevtext, showtext_text);
 			showtext_createnewtext();
@@ -48,25 +41,25 @@
 			delayedcall(showtext_timer, get(showtext_timeout), showtext_hide() );
 		  );
 	</action>
-	
 
-	<action name="showtext_createnewtext" scope="private:showtext">
+
+	<action name="showtext_createnewtext">
 		<!-- stop running mouse and alpha update calls -->
 		stopdelayedcall(showtext_mouseupdates);
-		stoptween(global.layer[showtext_tf].alpha);
+		stoptween(layer[showtext_tf].alpha);
 
 		<!-- remove the old textfield when the style has changed -->
 		if(showtext_style != showtext_prevstyle,
 			copy(showtext_prevstyle, showtext_style);
 			removelayer(showtext_tf);
 		  );
-		  
+
 		<!-- create a new textfield plugin layer -->
 		addlayer(showtext_tf);
 
 		<!-- create 'shortcut' variables (tf,ts) for faster access -->
-		copy(tf, global.layer[showtext_tf]);
-		copy(ts, global.textstyle[get(showtext_style)]);
+		copy(tf, layer[showtext_tf]);
+		copy(ts, textstyle[get(showtext_style)]);
 
 		<!-- get the position settings -->
 		if(ts.origin  !== null, copy(ts_origin,  ts.origin),  set(ts_origin, 'cursor'));
@@ -138,7 +131,7 @@
 		copy(showtext_fadeout, ts_fadetime);
 		if(ts_fadeintime GT 0,
 			set(tf.alpha, 0.0);
-			tween(global.layer[showtext_tf].alpha, get(ts_alpha), get(ts_fadeintime), linear);
+			tween(layer[showtext_tf].alpha, get(ts_alpha), get(ts_fadeintime), linear);
 		  ,
 			copy(tf.alpha, ts_alpha);
 		  );
@@ -160,37 +153,41 @@
 		set(tf.enabled, false);
 		set(tf.zorder, 999999);
 		if(ts.parent, copy(tf.parent, ts.parent) );
-		set(tf.type, 'text');
+		set(tf.url, '%SWFPATH%/plugins/textfield.swf');
+		
+		<!-- remove the shortcut variables -->
+		delete(ts);
+		delete(tf);
 
 		<!-- start the text-hiding timer -->
 		delayedcall(showtext_timer, get(showtext_timeout), showtext_hide() );
 	</action>
 
 
-	<action name="showtext_do_clipping" scope="private:showtext">
+	<action name="showtext_do_clipping">
 		if(showtext_clipping,
-			global.layer[showtext_tf].updatepos();
-			copy(tf_px, global.layer[showtext_tf].pixelx);
-			copy(tf_py, global.layer[showtext_tf].pixely);
+			layer[showtext_tf].updatepos();
+			copy(tf_px, layer[showtext_tf].pixelx);
+			copy(tf_py, layer[showtext_tf].pixely);
 			if(tf_px LT 0,
-				sub(global.layer[showtext_tf].x, tf_px);
+				sub(layer[showtext_tf].x, tf_px);
 			  ,
-				add(tf_rightedge, tf_px, global.layer[showtext_tf].pixelwidth);
-				if(tf_rightedge GE global.stagewidth, sub(tf_rightedge,global.stagewidth); sub(global.layer[showtext_tf].x,tf_rightedge); );
+				add(tf_rightedge, tf_px, layer[showtext_tf].pixelwidth);
+				if(tf_rightedge GE stagewidth, sub(tf_rightedge,stagewidth); sub(layer[showtext_tf].x,tf_rightedge); );
 			  );
 			if(tf_py LT 0,
-				sub(global.layer[showtext_tf].y,  tf_py);
+				sub(layer[showtext_tf].y,  tf_py);
 			  ,
-				add(tf_bottomedge, tf_py, global.layer[showtext_tf].pixelheight);
-				if(tf_bottomedge GE global.stageheight, sub(tf_bottomedge,global.stageheight); sub(global.layer[showtext_tf].y,tf_bottomedge); );
+				add(tf_bottomedge, tf_py, layer[showtext_tf].pixelheight);
+				if(tf_bottomedge GE stageheight, sub(tf_bottomedge,stageheight); sub(layer[showtext_tf].y,tf_bottomedge); );
 			  );
 		  );
 	</action>
 
 
-	<action name="showtext_movetomouse" scope="private:showtext">
-		copy(global.layer[showtext_tf].x, global.mouse.stagex);
-		copy(global.layer[showtext_tf].y, global.mouse.stagey);
+	<action name="showtext_movetomouse">
+		copy(layer[showtext_tf].x, mouse.stagex);
+		copy(layer[showtext_tf].y, mouse.stagey);
 
 		showtext_do_clipping();
 
@@ -198,9 +195,9 @@
 	</action>
 
 
-	<action name="showtext_hide" scope="private:showtext">
-		if(global.layer[showtext_tf],
-			tween(global.layer[showtext_tf].alpha, 0.0, get(showtext_fadeout), linear,
+	<action name="showtext_hide">
+		if(layer[showtext_tf],
+			tween(layer[showtext_tf].alpha, 0.0, get(showtext_fadeout), linear,
 					stopdelayedcall(showtext_mouseupdates);
 					removelayer(showtext_tf);
 					set(showtext_text, '');
