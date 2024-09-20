@@ -4,6 +4,8 @@
 	<plugin nam="toolbox" url="plugins/toolbox/toolboxV2.js" keep="true" preload="true"/>
 	<style name="roomspot" alpha="0.0" capture="false" />
 
+	<plugin name="WebVR" mobilevr_fake_support="true" vr_cursor="" />
+
 	<plugin name="soundinterface"
 	        url="%VIEWER%/plugins/soundinterface.js"
 	        rootpath=""
